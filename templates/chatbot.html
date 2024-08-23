@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwayBot</title>
+    <link href="assets/img/favicon.png" rel="icon">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            height: calc(100vh - 60px);
+            display: flex;
+            flex-direction: column;
+            background-color: #222;
+            border-radius: 8px;
+            margin: 10px auto;
+            overflow: hidden;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            animation: slideDown 1s ease-in-out;
+        }
+
+        h1 img {
+            width: 30px;
+            height: auto;
+            animation: rotateLogo 1.5s infinite linear;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes rotateLogo {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .chatbox {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            background-color: #333;
+            padding: 10px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: #666 #333;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .messages::-webkit-scrollbar-thumb {
+            background-color: #666;
+            border-radius: 4px;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            word-wrap: break-word;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: appear 0.5s forwards;
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+            gap: 10px;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message div {
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #444;
+            color: white;
+            position: relative;
+        }
+
+        .message.user div {
+            background-color: #666;
+        }
+
+        .message img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+
+        @keyframes appear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background-color: #444;
+        }
+
+        .input-group textarea {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            resize: none;
+            overflow-y: auto;
+        }
+
+        .input-group button {
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #555;
+            color: white;
+            cursor: pointer;
+        }
+
+        .upload-section {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            background-color: #333;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .upload-section.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="upload-section" id="uploadSection">
+            <input type="file" id="fileInput" />
+            <button onclick="uploadFile()">Upload PDF</button>
+        </div>
+        <div class="chatbox">
+            <h1>
+                <img src="assets/img/logo.jpg" alt="SwayBot Logo" />
+                SwayBot
+            </h1>
+            <div class="messages" id="messages"></div>
+            <div class="input-group">
+                <textarea id="userMessage" rows="3" placeholder="Type your message..."></textarea>
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const uploadSection = document.getElementById('uploadSection');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file!');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    uploadSection.classList.add('hidden');
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading file:', error);
+            });
+        }
+
+        function sendMessage() {
+            const userMessage = document.getElementById('userMessage').value;
+            const messages = document.getElementById('messages');
+
+            if (!userMessage.trim()) return;
+
+            // Add user's message to chat
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user';
+            userMessageDiv.innerHTML = `<div>${userMessage}</div>`;
+            messages.appendChild(userMessageDiv);
+
+            // Clear the input
+            document.getElementById('userMessage').value = '';
+
+            fetch('/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: userMessage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.className = 'message bot';
+                botMessageDiv.innerHTML = `<div>${data.response}</div>`;
+                messages.appendChild(botMessageDiv);
+                messages.scrollTop = messages.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error sending message:', error);
+            });
+        }
+    </script>
+</body>
+</html>

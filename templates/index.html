@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Generator</title>
+    <link href="assets/img/favicon.png" rel="icon">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e1e1e, #2d2d2d);
+            color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 30px 50px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            max-width: 450px;
+            width: 100%;
+            opacity: 0.9;
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translateY(0);
+        }
+
+        .container:hover {
+            opacity: 1;
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 25px;
+            color: #fff;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+            color: #ddd;
+            text-transform: uppercase;
+        }
+
+        input[type="file"],
+        input[type="submit"],
+        select,
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 10px 0 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            outline: none;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="file"]:hover,
+        input[type="submit"]:hover,
+        select:hover,
+        input[type="text"]:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .button-container a {
+            text-decoration: none;
+            color: #4CAF50;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .button-container a:hover {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #777;
+            font-size: 14px;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px 30px;
+                max-width: 95%;
+            }
+
+            h1 {
+                font-size: 22px;
+                margin-bottom: 20px;
+            }
+
+            input[type="file"],
+            input[type="submit"],
+            select,
+            input[type="text"] {
+                padding: 10px;
+                margin: 8px 0 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generate Your Content</h1>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <label for="file">Choose a PDF file:</label>
+            <input type="file" name="file" id="file" required>
+
+            <label for="content_type">Select Content Type:</label>
+            <select name="content_type" id="content_type" required>
+                <option value="questions">Questions</option>
+                <option value="answers">Answers</option>
+                <option value="lesson_plan">Lesson Plan</option>
+                <option value="summary">Summary</option>
+            </select>
+
+            <label for="custom_prompt">Or Enter a Custom Prompt:</label>
+            <input type="text" name="custom_prompt" id="custom_prompt" placeholder="Your custom prompt here">
+
+            <input type="submit" value="Generate Content">
+        </form>
+        <div class="button-container">
+            <a href="/chatbot">Chat with SwayBot</a>
+        </div>
+    </div>
+    <div class="footer">
+        Florence Sway
+    </div>
+</body>
+</html>
